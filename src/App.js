@@ -1,52 +1,49 @@
 
 
+
 import './App.css';
 import React, { useState } from 'react'
 import Select from 'react-select'
-//import countryList from 'react-select-country-list'
 import { Country, State, City }  from 'country-state-city';
 
 
 function App() {
- const [value, setValue] = useState('')
-//const [state_of_countary, setstate_of_countary] = useState('')
-  //const [State_name, setstate_name] = useState('')
-  //const options = useMemo(() => countryList().getData(), [])
- // const State = useMemo(() => stateList().getData(), [])
+ const [values, setValues] = useState('')
+ const [States, setStates] = useState('')
+ const [Cities, setCity] = useState([])
 
-//  const opt = languages.map(item => ({'value':item}));
-//  console.log(opt);
-const country = Country.getAllCountries()
-const opt =country.map(({isoCode:value, name:label}) => ({value,label}));
-console.log(opt); 
- const state = State.getStatesOfCountry("IN")
+
+  const country = Country.getAllCountries()
+  const countryList =[];
+  country.map((index)=>{countryList.push({countryCode:index.isoCode,label:index.name})})
+  
+ const country_state = State.getStatesOfCountry(States.country)
+ const stateList = [] 
+ country_state.map((index)=>{stateList.push({value:index.countryCode,label:index.name})})
  
- //const res = state.map((state_name => ({'value':state_name,'label':state_name})));
- const res = state.map(({isoCode:value, name:label}) => ({value,label}));
- console.log(res); 
- const city = City.getCitiesOfState("IN" ,"RJ")
- //const citycode=[{"countryCode":"value"}, {"isoCode":"value"}, {"name":"value"}]
- const rese = city.map(({isoCode:value, name:label}) => ({value,label}));
- console.log(rese); 
+ 
+ const city = City.getCitiesOfState(Cities.country,Cities.country_state);
 
-
+ const cityList = [];
+ 
+ city.map((index)=>{cityList.push({value:index.countryCode,
+                label:index.name,element:index.stateCode})})
+                console.log(city);
+                console.log(cityList);
   const changeHandler = value => {
-   console.log(value); 
+ 
    Country.getAllCountries()
    State.getStatesOfCountry()
    City.getCitiesOfState()
-
-    //setstate_of_countary(State.getStatesOfCountry(value.value));
-    setValue(value)
+  
+   setValues(value)
+   
     //setstate_name(State_name)
   }
   
- // console.log(Country.getAllCountries());
-  //console.log( State.getStatesOfCountry("IN"));
-  //console.log(city.getCitiesOfState("RJ"));
   
+ 
   return (
-
     <>
       <div className="App">
       
@@ -54,15 +51,20 @@ console.log(opt);
           <div className='container'>
             <div className='mb-3 mx-auto'>
             
-              <Select options={country} value={value} onChange={(e)=>{changeHandler(e)}} placeholder="Country" />
+              <Select options={countryList} value={values.country} onChange={(value) => {
+            setStates({ country: value.countryCode, })}} placeholder="Country" />
             </div>
             <div className='mb-3 mx-auto'>
             
-            <Select options={state} value={res} onChange={(e)=>{changeHandler(e)}}  placeholder="State"/>
+            <Select options={stateList} value={States.country_state} onChange={(value) => {
+            setCity({ state: value.label ,country_name:States.country});
+          
+          }}  placeholder="State"/>
             </div>
             <div className='mb-3 mx-auto'>
           
-            <Select options={city} value={rese} onChange={(e)=>{changeHandler(e)}} placeholder="City" />
+            <Select options={cityList} value={Cities.city} onChange={(value) => setValues({city:value.label,state_name:Cities.country && Cities.country_state})}
+          placeholder="City" />
             </div>
           </div>
       </div>
@@ -71,4 +73,5 @@ console.log(opt);
 }
 
 export default App;
+
 
